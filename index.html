@@ -7,19 +7,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#1a1a2e">
     <title>Palmdale Station B2V 2026</title>
-    <link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;Palmdale B2V&quot;,&quot;short_name&quot;:&quot;B2V&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;theme_color&quot;:&quot;%231a1a2e&quot;,&quot;background_color&quot;:&quot;%231a1a2e&quot;}">
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         * { box-sizing: border-box; }
-        body { 
-            margin: 0; 
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #111827;
-            -webkit-tap-highlight-color: transparent;
-        }
+        body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #111827; -webkit-tap-highlight-color: transparent; }
         input { font-size: 16px !important; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
@@ -28,100 +22,29 @@
 <body>
     <div id="root"></div>
     <script>
-        // LocalStorage-based storage polyfill
         window.storage = {
-            async get(key, shared) {
-                try {
-                    const value = localStorage.getItem(key);
-                    return value ? { value } : null;
-                } catch (e) {
-                    return null;
-                }
-            },
-            async set(key, value, shared) {
-                try {
-                    localStorage.setItem(key, value);
-                    return { key, value };
-                } catch (e) {
-                    return null;
-                }
-            }
+            async get(key) { try { const v = localStorage.getItem(key); return v ? { value: v } : null; } catch(e) { return null; } },
+            async set(key, value) { try { localStorage.setItem(key, value); return { key, value }; } catch(e) { return null; } }
         };
     </script>
     <script type="text/babel">
         const { useState, useEffect, useCallback } = React;
 
-        // SVG Icons as components
-        const MapPin = ({ size = 24, className = "" }) => (
-            <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-            </svg>
-        );
-        const User = ({ size = 24, className = "" }) => (
-            <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-        );
-        const ChevronDown = ({ size = 24 }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-        );
-        const ChevronUp = ({ size = 24 }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="18 15 12 9 6 15"></polyline>
-            </svg>
-        );
-        const Edit2 = ({ size = 24 }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-            </svg>
-        );
-        const Check = ({ size = 24 }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-        );
-        const X = ({ size = 24 }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-        );
-        const Navigation = ({ size = 24 }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
-            </svg>
-        );
-        const Lock = ({ size = 24 }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
-        );
-        const Unlock = ({ size = 24 }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
-            </svg>
-        );
-        const Eye = ({ size = 24 }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-        );
-        const RefreshCw = ({ size = 24, className = "" }) => (
-            <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="23 4 23 10 17 10"></polyline>
-                <polyline points="1 20 1 14 7 14"></polyline>
-                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-            </svg>
-        );
+        const MapPin = ({ size = 24 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>);
+        const User = ({ size = 24 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>);
+        const ChevronDown = ({ size = 24 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"></polyline></svg>);
+        const ChevronUp = ({ size = 24 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="18 15 12 9 6 15"></polyline></svg>);
+        const Edit2 = ({ size = 24 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>);
+        const Check = ({ size = 24 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>);
+        const X = ({ size = 24 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>);
+        const Navigation = ({ size = 24 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>);
+        const Lock = ({ size = 24 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>);
+        const Unlock = ({ size = 24 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>);
+        const Eye = ({ size = 24 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>);
+        const CheckCircle = ({ size = 24 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>);
+        const Clock = ({ size = 24 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>);
+        const UserCheck = ({ size = 24 }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>);
 
-        // Stage data
         const STAGES = [
             { id: 0, name: "Check-in", lat: 35.55322, lng: -116.18933, distance: 0, description: "Follow Vehicle Check-in - Highway 127, 21+ miles north of I-15" },
             { id: 1, name: "Stage 1 (Start)", lat: 35.582, lng: -116.22105, distance: 5.4, description: "Start line - 24.3 miles north of Baker on Highway 127" },
@@ -148,12 +71,11 @@
         ];
 
         const TOTAL_DISTANCE = STAGES.reduce((sum, s) => sum + s.distance, 0);
+        const ADMIN_PASSWORD = "palmdale2026"; // ⚠️ CHANGE THIS!
 
-        // ⚠️ CHANGE THIS PASSWORD BEFORE SHARING WITH YOUR TEAM!
-        const ADMIN_PASSWORD = "buttstuff69";
-
-        function PalmdaleB2VTracker() {
+        function App() {
             const [runners, setRunners] = useState({});
+            const [checkIns, setCheckIns] = useState({});
             const [selectedStage, setSelectedStage] = useState(null);
             const [editingStage, setEditingStage] = useState(null);
             const [editName, setEditName] = useState('');
@@ -165,38 +87,30 @@
             const [showLoginModal, setShowLoginModal] = useState(false);
             const [passwordInput, setPasswordInput] = useState('');
             const [loginError, setLoginError] = useState('');
-            const [lastUpdated, setLastUpdated] = useState(null);
+            const [showCheckInConfirm, setShowCheckInConfirm] = useState(null);
 
             useEffect(() => {
                 async function loadData() {
                     try {
-                        const result = await window.storage.get('palmdale-b2v-runners', true);
-                        if (result && result.value) {
+                        const result = await window.storage.get('palmdale-b2v-data');
+                        if (result?.value) {
                             const data = JSON.parse(result.value);
                             setRunners(data.runners || {});
-                            setLastUpdated(data.lastUpdated || null);
+                            setCheckIns(data.checkIns || {});
                         }
-                    } catch (error) {
-                        console.log('Starting fresh');
-                    }
+                    } catch (e) { console.log('Starting fresh'); }
                     setLoading(false);
                 }
                 loadData();
-
-                const adminSession = sessionStorage.getItem('palmdale-admin');
-                if (adminSession === 'true') setIsAdmin(true);
+                if (sessionStorage.getItem('palmdale-admin') === 'true') setIsAdmin(true);
             }, []);
 
-            const saveData = useCallback(async (data) => {
+            const saveData = useCallback(async (newRunners, newCheckIns) => {
                 try {
-                    const savePayload = { runners: data, lastUpdated: new Date().toISOString() };
-                    await window.storage.set('palmdale-b2v-runners', JSON.stringify(savePayload), true);
-                    setLastUpdated(savePayload.lastUpdated);
+                    await window.storage.set('palmdale-b2v-data', JSON.stringify({ runners: newRunners, checkIns: newCheckIns, lastUpdated: new Date().toISOString() }));
                     setSaveStatus('Saved!');
                     setTimeout(() => setSaveStatus(''), 2000);
-                } catch (error) {
-                    setSaveStatus('Error saving');
-                }
+                } catch (e) { setSaveStatus('Error'); }
             }, []);
 
             const handleLogin = () => {
@@ -206,21 +120,15 @@
                     setShowLoginModal(false);
                     setPasswordInput('');
                     setLoginError('');
-                } else {
-                    setLoginError('Incorrect password');
-                }
+                } else setLoginError('Incorrect password');
             };
 
-            const handleLogout = () => {
-                setIsAdmin(false);
-                sessionStorage.removeItem('palmdale-admin');
-                setEditingStage(null);
-            };
+            const handleLogout = () => { setIsAdmin(false); sessionStorage.removeItem('palmdale-admin'); setEditingStage(null); };
 
             const handleSaveRunner = (stageId) => {
                 const newRunners = { ...runners, [stageId]: { name: editName, notes: editNotes } };
                 setRunners(newRunners);
-                saveData(newRunners);
+                saveData(newRunners, checkIns);
                 setEditingStage(null);
                 setEditName('');
                 setEditNotes('');
@@ -229,16 +137,28 @@
             const handleClearRunner = (stageId) => {
                 const newRunners = { ...runners };
                 delete newRunners[stageId];
+                const newCheckIns = { ...checkIns };
+                delete newCheckIns[stageId];
                 setRunners(newRunners);
-                saveData(newRunners);
+                setCheckIns(newCheckIns);
+                saveData(newRunners, newCheckIns);
             };
 
-            const startEdit = (stage) => {
-                if (!isAdmin) return;
-                setEditingStage(stage.id);
-                setEditName(runners[stage.id]?.name || '');
-                setEditNotes(runners[stage.id]?.notes || '');
+            const handleCheckIn = (stageId) => {
+                const newCheckIns = { ...checkIns, [stageId]: { time: new Date().toISOString() } };
+                setCheckIns(newCheckIns);
+                saveData(runners, newCheckIns);
+                setShowCheckInConfirm(null);
             };
+
+            const handleUndoCheckIn = (stageId) => {
+                const newCheckIns = { ...checkIns };
+                delete newCheckIns[stageId];
+                setCheckIns(newCheckIns);
+                saveData(runners, newCheckIns);
+            };
+
+            const startEdit = (stage) => { if (!isAdmin) return; setEditingStage(stage.id); setEditName(runners[stage.id]?.name || ''); setEditNotes(runners[stage.id]?.notes || ''); };
 
             const getStageColor = (stage) => {
                 if (stage.id === 0) return '#6B7280';
@@ -248,227 +168,202 @@
                 return '#3B82F6';
             };
 
-            const assignedCount = Object.keys(runners).filter(k => runners[k]?.name).length;
-            const runningStages = STAGES.filter(s => s.id > 0 && s.id < 21).length;
+            const formatTime = (iso) => new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-            if (loading) {
-                return (
-                    <div style={{minHeight: '100vh', background: '#111827', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <div style={{color: 'white', fontSize: '1.25rem'}}>Loading race data...</div>
-                    </div>
-                );
-            }
+            const assignedCount = Object.keys(runners).filter(k => runners[k]?.name).length;
+            const checkedInCount = Object.keys(checkIns).length;
+            const runningStages = 20;
+
+            if (loading) return <div style={{minHeight:'100vh',background:'#111827',display:'flex',alignItems:'center',justifyContent:'center',color:'white'}}>Loading...</div>;
 
             return (
-                <div style={{minHeight: '100vh', background: '#111827', color: 'white'}}>
+                <div style={{minHeight:'100vh',background:'#111827',color:'white'}}>
+                    {/* Check-In Modal */}
+                    {showCheckInConfirm !== null && (
+                        <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.8)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:50,padding:'1rem'}}>
+                            <div style={{background:'#1f2937',borderRadius:'0.75rem',padding:'1.5rem',width:'100%',maxWidth:'20rem',textAlign:'center'}}>
+                                <div style={{fontSize:'3rem',marginBottom:'1rem'}}>📍</div>
+                                <h2 style={{fontSize:'1.25rem',fontWeight:'bold',marginBottom:'0.5rem'}}>Check In to {STAGES.find(s => s.id === showCheckInConfirm)?.name}?</h2>
+                                <p style={{color:'#9ca3af',fontSize:'0.875rem',marginBottom:'1.5rem'}}>Confirms you've arrived at the exchange point.</p>
+                                <div style={{display:'flex',gap:'0.75rem'}}>
+                                    <button onClick={() => handleCheckIn(showCheckInConfirm)} style={{flex:1,background:'#16a34a',padding:'0.75rem',borderRadius:'0.5rem',border:'none',color:'white',cursor:'pointer',fontWeight:'600'}}>✓ Check In</button>
+                                    <button onClick={() => setShowCheckInConfirm(null)} style={{flex:1,background:'#4b5563',padding:'0.75rem',borderRadius:'0.5rem',border:'none',color:'white',cursor:'pointer',fontWeight:'600'}}>Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Login Modal */}
                     {showLoginModal && (
-                        <div style={{position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '1rem'}}>
-                            <div style={{background: '#1f2937', borderRadius: '0.5rem', padding: '1.5rem', width: '100%', maxWidth: '20rem'}}>
-                                <h2 style={{fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                                    <Lock size={20} /> Admin Login
-                                </h2>
-                                <input
-                                    type="password"
-                                    placeholder="Enter admin password"
-                                    value={passwordInput}
-                                    onChange={(e) => setPasswordInput(e.target.value)}
-                                    onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-                                    style={{width: '100%', background: '#374151', borderRadius: '0.25rem', padding: '0.5rem 0.75rem', color: 'white', border: 'none', marginBottom: '0.75rem', fontSize: '16px'}}
-                                    autoFocus
-                                />
-                                {loginError && <p style={{color: '#f87171', fontSize: '0.875rem', marginBottom: '0.75rem'}}>{loginError}</p>}
-                                <div style={{display: 'flex', gap: '0.5rem'}}>
-                                    <button onClick={handleLogin} style={{flex: 1, background: '#2563eb', padding: '0.5rem', borderRadius: '0.25rem', border: 'none', color: 'white', cursor: 'pointer'}}>Login</button>
-                                    <button onClick={() => { setShowLoginModal(false); setPasswordInput(''); setLoginError(''); }} style={{flex: 1, background: '#4b5563', padding: '0.5rem', borderRadius: '0.25rem', border: 'none', color: 'white', cursor: 'pointer'}}>Cancel</button>
+                        <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.7)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:50,padding:'1rem'}}>
+                            <div style={{background:'#1f2937',borderRadius:'0.5rem',padding:'1.5rem',width:'100%',maxWidth:'20rem'}}>
+                                <h2 style={{fontSize:'1.25rem',fontWeight:'bold',marginBottom:'1rem',display:'flex',alignItems:'center',gap:'0.5rem'}}><Lock size={20}/> Admin Login</h2>
+                                <input type="password" placeholder="Enter password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleLogin()} style={{width:'100%',background:'#374151',borderRadius:'0.25rem',padding:'0.5rem 0.75rem',color:'white',border:'none',marginBottom:'0.75rem',fontSize:'16px'}} autoFocus/>
+                                {loginError && <p style={{color:'#f87171',fontSize:'0.875rem',marginBottom:'0.75rem'}}>{loginError}</p>}
+                                <div style={{display:'flex',gap:'0.5rem'}}>
+                                    <button onClick={handleLogin} style={{flex:1,background:'#2563eb',padding:'0.5rem',borderRadius:'0.25rem',border:'none',color:'white',cursor:'pointer'}}>Login</button>
+                                    <button onClick={() => { setShowLoginModal(false); setPasswordInput(''); setLoginError(''); }} style={{flex:1,background:'#4b5563',padding:'0.5rem',borderRadius:'0.25rem',border:'none',color:'white',cursor:'pointer'}}>Cancel</button>
                                 </div>
                             </div>
                         </div>
                     )}
 
                     {/* Header */}
-                    <div style={{background: 'linear-gradient(to right, #14532d, #1e3a5f)', padding: '1rem', boxShadow: '0 4px 6px rgba(0,0,0,0.3)'}}>
-                        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                    <div style={{background:'linear-gradient(to right, #14532d, #1e3a5f)',padding:'1rem'}}>
+                        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
                             <div>
-                                <h1 style={{fontSize: '1.5rem', fontWeight: 'bold', margin: 0}}>🏃 Palmdale Station B2V</h1>
-                                <p style={{color: '#86efac', fontSize: '0.875rem', margin: '0.25rem 0 0 0'}}>Baker to Vegas 2026</p>
+                                <h1 style={{fontSize:'1.5rem',fontWeight:'bold',margin:0}}>🏃 Palmdale Station B2V</h1>
+                                <p style={{color:'#86efac',fontSize:'0.875rem',margin:'0.25rem 0 0'}}>Baker to Vegas 2026</p>
                             </div>
-                            <button
-                                onClick={() => isAdmin ? handleLogout() : setShowLoginModal(true)}
-                                style={{padding: '0.5rem 0.75rem', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', border: 'none', color: 'white', cursor: 'pointer', background: isAdmin ? '#16a34a' : '#374151'}}
-                            >
-                                {isAdmin ? <><Unlock size={16} /> Admin</> : <><Eye size={16} /> View</>}
+                            <button onClick={() => isAdmin ? handleLogout() : setShowLoginModal(true)} style={{padding:'0.5rem 0.75rem',borderRadius:'0.5rem',display:'flex',alignItems:'center',gap:'0.5rem',fontSize:'0.875rem',border:'none',color:'white',cursor:'pointer',background:isAdmin?'#16a34a':'#374151'}}>
+                                {isAdmin ? <><Unlock size={16}/> Admin</> : <><Eye size={16}/> View</>}
                             </button>
                         </div>
-                        
-                        <div style={{display: 'flex', justifyContent: 'center', gap: '0.75rem', marginTop: '0.75rem', flexWrap: 'wrap'}}>
-                            <span style={{background: 'rgba(30,64,175,0.5)', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.875rem'}}>{TOTAL_DISTANCE.toFixed(1)} miles</span>
-                            <span style={{background: 'rgba(22,101,52,0.5)', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.875rem'}}>{assignedCount}/{runningStages} assigned</span>
+                        <div style={{display:'flex',justifyContent:'center',gap:'0.5rem',marginTop:'0.75rem',flexWrap:'wrap'}}>
+                            <span style={{background:'rgba(30,64,175,0.5)',padding:'0.25rem 0.75rem',borderRadius:'9999px',fontSize:'0.75rem'}}>{TOTAL_DISTANCE.toFixed(1)} mi</span>
+                            <span style={{background:'rgba(22,101,52,0.5)',padding:'0.25rem 0.75rem',borderRadius:'9999px',fontSize:'0.75rem'}}>{assignedCount}/{runningStages} assigned</span>
+                            <span style={{background:'rgba(147,51,234,0.5)',padding:'0.25rem 0.75rem',borderRadius:'9999px',fontSize:'0.75rem',display:'flex',alignItems:'center',gap:'0.25rem'}}><UserCheck size={12}/> {checkedInCount} checked in</span>
                         </div>
-                        
-                        {saveStatus && <div style={{textAlign: 'center', marginTop: '0.5rem', color: '#4ade80', fontSize: '0.875rem'}} className="animate-pulse">{saveStatus}</div>}
+                        {saveStatus && <div style={{textAlign:'center',marginTop:'0.5rem',color:'#4ade80',fontSize:'0.875rem'}} className="animate-pulse">{saveStatus}</div>}
                     </div>
 
                     {/* Map */}
-                    <div style={{position: 'relative', height: '14rem', background: '#1f2937', overflow: 'hidden'}}>
-                        <svg viewBox="0 0 800 300" style={{width: '100%', height: '100%', background: 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)'}}>
-                            {[...Array(10)].map((_, i) => <line key={`h${i}`} x1="0" y1={i * 30} x2="800" y2={i * 30} stroke="#2a2a4a" strokeWidth="0.5" />)}
-                            {[...Array(20)].map((_, i) => <line key={`v${i}`} x1={i * 40} y1="0" x2={i * 40} y2="300" stroke="#2a2a4a" strokeWidth="0.5" />)}
-                            
-                            <path
-                                d={STAGES.map((stage, i) => {
-                                    const x = 50 + ((stage.lng + 116.35) / 1.2) * 700;
-                                    const y = 280 - ((stage.lat - 35.5) / 0.7) * 260;
-                                    return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-                                }).join(' ')}
-                                fill="none" stroke="#4a5568" strokeWidth="3" strokeDasharray="5,5"
-                            />
-                            
+                    <div style={{position:'relative',height:'12rem',background:'#1f2937',overflow:'hidden'}}>
+                        <svg viewBox="0 0 800 280" style={{width:'100%',height:'100%',background:'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)'}}>
+                            <path d={STAGES.map((s, i) => { const x = 50 + ((s.lng + 116.35) / 1.2) * 700; const y = 260 - ((s.lat - 35.5) / 0.7) * 240; return `${i === 0 ? 'M' : 'L'} ${x} ${y}`; }).join(' ')} fill="none" stroke="#4a5568" strokeWidth="3" strokeDasharray="5,5"/>
                             {STAGES.map((stage) => {
                                 const x = 50 + ((stage.lng + 116.35) / 1.2) * 700;
-                                const y = 280 - ((stage.lat - 35.5) / 0.7) * 260;
+                                const y = 260 - ((stage.lat - 35.5) / 0.7) * 240;
                                 const isSelected = selectedStage?.id === stage.id;
                                 const hasRunner = runners[stage.id]?.name;
-                                
+                                const isCheckedIn = checkIns[stage.id];
                                 return (
-                                    <g key={stage.id} onClick={() => setSelectedStage(stage)} style={{cursor: 'pointer'}}>
-                                        {isSelected && (
-                                            <circle cx={x} cy={y} r="18" fill={getStageColor(stage)} opacity="0.3">
-                                                <animate attributeName="r" values="18;25;18" dur="1.5s" repeatCount="indefinite" />
-                                            </circle>
-                                        )}
-                                        <circle cx={x} cy={y} r={isSelected ? 12 : 8} fill={getStageColor(stage)} stroke={hasRunner ? '#10B981' : '#fff'} strokeWidth={hasRunner ? 3 : 1} />
-                                        <text x={x} y={y + 1} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize={isSelected ? 10 : 7} fontWeight="bold">
-                                            {stage.id === 0 ? '✓' : stage.id === 21 ? '🏁' : stage.id}
-                                        </text>
-                                        {hasRunner && <circle cx={x + 8} cy={y - 8} r="4" fill="#10B981" />}
+                                    <g key={stage.id} onClick={() => setSelectedStage(stage)} style={{cursor:'pointer'}}>
+                                        {isSelected && <circle cx={x} cy={y} r="16" fill={getStageColor(stage)} opacity="0.3"><animate attributeName="r" values="16;22;16" dur="1.5s" repeatCount="indefinite"/></circle>}
+                                        <circle cx={x} cy={y} r={isSelected ? 11 : 7} fill={isCheckedIn ? '#10B981' : getStageColor(stage)} stroke={hasRunner ? '#10B981' : '#fff'} strokeWidth={hasRunner ? 2.5 : 1}/>
+                                        <text x={x} y={y + 1} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize={isSelected ? 9 : 6} fontWeight="bold">{stage.id === 0 ? '✓' : stage.id === 21 ? '🏁' : isCheckedIn ? '✓' : stage.id}</text>
                                     </g>
                                 );
                             })}
-                            
-                            <text x="60" y="20" fill="#9CA3AF" fontSize="10">Baker</text>
-                            <text x="720" y="50" fill="#9CA3AF" fontSize="10">Las Vegas</text>
+                            <text x="60" y="18" fill="#9CA3AF" fontSize="9">Baker</text>
+                            <text x="720" y="45" fill="#9CA3AF" fontSize="9">Las Vegas</text>
                         </svg>
-                        
-                        <div style={{position: 'absolute', bottom: '0.5rem', left: '0.5rem', background: 'rgba(17,24,39,0.8)', padding: '0.5rem', borderRadius: '0.25rem', fontSize: '0.75rem'}}>
-                            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem'}}><div style={{width: '0.75rem', height: '0.75rem', borderRadius: '50%', background: '#3B82F6'}}></div><span>&lt;6 mi</span></div>
-                            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem'}}><div style={{width: '0.75rem', height: '0.75rem', borderRadius: '50%', background: '#F59E0B'}}></div><span>6-8 mi</span></div>
-                            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}><div style={{width: '0.75rem', height: '0.75rem', borderRadius: '50%', background: '#EF4444'}}></div><span>&gt;8 mi</span></div>
+                        <div style={{position:'absolute',bottom:'0.4rem',left:'0.4rem',background:'rgba(17,24,39,0.85)',padding:'0.4rem',borderRadius:'0.25rem',fontSize:'0.6rem'}}>
+                            <div style={{display:'flex',alignItems:'center',gap:'0.3rem',marginBottom:'0.15rem'}}><div style={{width:'0.5rem',height:'0.5rem',borderRadius:'50%',background:'#3B82F6'}}></div><span>&lt;6mi</span></div>
+                            <div style={{display:'flex',alignItems:'center',gap:'0.3rem',marginBottom:'0.15rem'}}><div style={{width:'0.5rem',height:'0.5rem',borderRadius:'50%',background:'#F59E0B'}}></div><span>6-8mi</span></div>
+                            <div style={{display:'flex',alignItems:'center',gap:'0.3rem',marginBottom:'0.15rem'}}><div style={{width:'0.5rem',height:'0.5rem',borderRadius:'50%',background:'#EF4444'}}></div><span>&gt;8mi</span></div>
+                            <div style={{display:'flex',alignItems:'center',gap:'0.3rem'}}><div style={{width:'0.5rem',height:'0.5rem',borderRadius:'50%',background:'#10B981'}}></div><span>Ready</span></div>
                         </div>
-                        
-                        {selectedStage && (
-                            <div style={{position: 'absolute', top: '0.5rem', right: '0.5rem', background: 'rgba(17,24,39,0.9)', padding: '0.75rem', borderRadius: '0.5rem', maxWidth: '12rem'}}>
-                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                                    <MapPin size={16} className="text-blue-400" style={{color: '#60a5fa'}} />
-                                    <span style={{fontWeight: 'bold'}}>{selectedStage.name}</span>
-                                </div>
-                                {selectedStage.distance > 0 && <div style={{fontSize: '0.875rem', color: '#d1d5db', marginTop: '0.25rem'}}>{selectedStage.distance} miles</div>}
-                                {runners[selectedStage.id]?.name && (
-                                    <div style={{fontSize: '0.875rem', color: '#4ade80', marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem'}}>
-                                        <User size={12} /> {runners[selectedStage.id].name}
-                                    </div>
-                                )}
-                            </div>
-                        )}
                     </div>
 
-                    {/* Stage List Toggle */}
-                    <button onClick={() => setShowList(!showList)} style={{width: '100%', background: '#1f2937', padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #374151', border: 'none', color: 'white', cursor: 'pointer'}}>
-                        <span style={{fontWeight: '600'}}>Stage List & Assignments</span>
-                        {showList ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                    {/* List Toggle */}
+                    <button onClick={() => setShowList(!showList)} style={{width:'100%',background:'#1f2937',padding:'0.75rem 1rem',display:'flex',alignItems:'center',justifyContent:'space-between',borderBottom:'1px solid #374151',border:'none',color:'white',cursor:'pointer'}}>
+                        <span style={{fontWeight:'600'}}>Stages & Assignments</span>
+                        {showList ? <ChevronUp size={20}/> : <ChevronDown size={20}/>}
                     </button>
 
                     {/* Stage List */}
                     {showList && (
-                        <div style={{paddingBottom: '6rem'}}>
-                            {STAGES.map((stage) => (
-                                <div key={stage.id} style={{borderBottom: '1px solid #374151', background: selectedStage?.id === stage.id ? '#1f2937' : '#111827'}}>
-                                    <div style={{padding: '1rem', cursor: 'pointer'}} onClick={() => setSelectedStage(selectedStage?.id === stage.id ? null : stage)}>
-                                        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                                            <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
-                                                <div style={{width: '2.5rem', height: '2.5rem', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.875rem', background: getStageColor(stage)}}>
-                                                    {stage.id === 0 ? '✓' : stage.id === 21 ? '🏁' : stage.id}
-                                                </div>
-                                                <div>
-                                                    <div style={{fontWeight: '600'}}>{stage.name}</div>
-                                                    <div style={{fontSize: '0.875rem', color: '#9ca3af'}}>
-                                                        {stage.distance > 0 ? `${stage.distance} miles` : stage.id === 0 ? 'Check-in' : 'Finish'}
+                        <div style={{paddingBottom:'5.5rem'}}>
+                            {STAGES.map((stage) => {
+                                const isCheckedIn = checkIns[stage.id];
+                                const hasRunner = runners[stage.id]?.name;
+                                return (
+                                    <div key={stage.id} style={{borderBottom:'1px solid #374151',background:selectedStage?.id === stage.id ? '#1f2937' : '#111827'}}>
+                                        <div style={{padding:'0.875rem',cursor:'pointer'}} onClick={() => setSelectedStage(selectedStage?.id === stage.id ? null : stage)}>
+                                            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                                                <div style={{display:'flex',alignItems:'center',gap:'0.65rem'}}>
+                                                    <div style={{position:'relative'}}>
+                                                        <div style={{width:'2.25rem',height:'2.25rem',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:'bold',fontSize:'0.8rem',background:isCheckedIn?'#10B981':getStageColor(stage)}}>
+                                                            {stage.id === 0 ? '✓' : stage.id === 21 ? '🏁' : isCheckedIn ? '✓' : stage.id}
+                                                        </div>
+                                                        {isCheckedIn && <div style={{position:'absolute',bottom:'-2px',right:'-2px',background:'#a855f7',borderRadius:'50%',width:'14px',height:'14px',display:'flex',alignItems:'center',justifyContent:'center'}}><Clock size={8}/></div>}
+                                                    </div>
+                                                    <div>
+                                                        <div style={{fontWeight:'600',fontSize:'0.95rem',display:'flex',alignItems:'center',gap:'0.4rem'}}>
+                                                            {stage.name}
+                                                            {isCheckedIn && <span style={{fontSize:'0.6rem',background:'#7c3aed',padding:'0.1rem 0.35rem',borderRadius:'9999px'}}>READY</span>}
+                                                        </div>
+                                                        <div style={{fontSize:'0.8rem',color:'#9ca3af'}}>
+                                                            {stage.distance > 0 ? `${stage.distance} mi` : stage.id === 0 ? 'Check-in' : 'Finish'}
+                                                            {isCheckedIn && <span style={{color:'#a78bfa'}}> • {formatTime(isCheckedIn.time)}</span>}
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                {hasRunner ? (
+                                                    <div style={{textAlign:'right'}}>
+                                                        <div style={{display:'flex',alignItems:'center',gap:'0.2rem',color:'#4ade80',fontSize:'0.9rem'}}><User size={14}/><span style={{fontWeight:'500'}}>{runners[stage.id].name}</span></div>
+                                                        {runners[stage.id].notes && <div style={{fontSize:'0.7rem',color:'#9ca3af',maxWidth:'7rem',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{runners[stage.id].notes}</div>}
+                                                    </div>
+                                                ) : <div style={{color:'#6b7280',fontSize:'0.8rem'}}>Not assigned</div>}
                                             </div>
-                                            
-                                            {runners[stage.id]?.name ? (
-                                                <div style={{textAlign: 'right'}}>
-                                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#4ade80'}}>
-                                                        <User size={16} />
-                                                        <span style={{fontWeight: '500'}}>{runners[stage.id].name}</span>
-                                                    </div>
-                                                    {runners[stage.id].notes && <div style={{fontSize: '0.75rem', color: '#9ca3af', maxWidth: '8rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{runners[stage.id].notes}</div>}
-                                                </div>
-                                            ) : (
-                                                <div style={{color: '#6b7280', fontSize: '0.875rem'}}>Not assigned</div>
-                                            )}
                                         </div>
-                                    </div>
 
-                                    {selectedStage?.id === stage.id && (
-                                        <div style={{padding: '0 1rem 1rem', background: 'rgba(31,41,55,0.5)'}}>
-                                            <p style={{fontSize: '0.875rem', color: '#d1d5db', marginBottom: '0.75rem'}}>{stage.description}</p>
-                                            <div style={{fontSize: '0.75rem', color: '#9ca3af', marginBottom: '0.75rem'}}>GPS: {stage.lat.toFixed(5)}°N, {Math.abs(stage.lng).toFixed(5)}°W</div>
+                                        {selectedStage?.id === stage.id && (
+                                            <div style={{padding:'0 0.875rem 0.875rem',background:'rgba(31,41,55,0.5)'}}>
+                                                <p style={{fontSize:'0.8rem',color:'#d1d5db',marginBottom:'0.6rem'}}>{stage.description}</p>
+                                                <div style={{fontSize:'0.7rem',color:'#9ca3af',marginBottom:'0.6rem'}}>GPS: {stage.lat.toFixed(5)}°N, {Math.abs(stage.lng).toFixed(5)}°W</div>
 
-                                            {isAdmin && editingStage === stage.id ? (
-                                                <div>
-                                                    <input type="text" placeholder="Runner name" value={editName} onChange={(e) => setEditName(e.target.value)} style={{width: '100%', background: '#374151', borderRadius: '0.25rem', padding: '0.5rem 0.75rem', color: 'white', border: 'none', marginBottom: '0.75rem', fontSize: '16px'}} autoFocus />
-                                                    <input type="text" placeholder="Notes (pace, phone, etc.)" value={editNotes} onChange={(e) => setEditNotes(e.target.value)} style={{width: '100%', background: '#374151', borderRadius: '0.25rem', padding: '0.5rem 0.75rem', color: 'white', border: 'none', marginBottom: '0.75rem', fontSize: '16px'}} />
-                                                    <div style={{display: 'flex', gap: '0.5rem'}}>
-                                                        <button onClick={() => handleSaveRunner(stage.id)} style={{flex: 1, background: '#16a34a', padding: '0.5rem', borderRadius: '0.25rem', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'}}>
-                                                            <Check size={16} /> Save
-                                                        </button>
-                                                        <button onClick={() => { setEditingStage(null); setEditName(''); setEditNotes(''); }} style={{flex: 1, background: '#4b5563', padding: '0.5rem', borderRadius: '0.25rem', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'}}>
-                                                            <X size={16} /> Cancel
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div style={{display: 'flex', gap: '0.5rem'}}>
-                                                    {isAdmin ? (
-                                                        <>
-                                                            <button onClick={() => startEdit(stage)} style={{flex: 1, background: '#2563eb', padding: '0.5rem', borderRadius: '0.25rem', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'}}>
-                                                                <Edit2 size={16} /> {runners[stage.id]?.name ? 'Edit' : 'Assign'}
+                                                {/* Check-In Button */}
+                                                {hasRunner && stage.id > 0 && stage.id < 21 && (
+                                                    <div style={{marginBottom:'0.6rem'}}>
+                                                        {isCheckedIn ? (
+                                                            <div style={{display:'flex',alignItems:'center',gap:'0.5rem'}}>
+                                                                <div style={{flex:1,background:'#065f46',padding:'0.6rem',borderRadius:'0.5rem',display:'flex',alignItems:'center',justifyContent:'center',gap:'0.4rem',fontSize:'0.85rem'}}>
+                                                                    <CheckCircle size={18}/><span style={{fontWeight:'600'}}>Checked In @ {formatTime(isCheckedIn.time)}</span>
+                                                                </div>
+                                                                <button onClick={() => handleUndoCheckIn(stage.id)} style={{background:'#4b5563',padding:'0.6rem 0.8rem',borderRadius:'0.5rem',border:'none',color:'white',cursor:'pointer',fontSize:'0.8rem'}}>Undo</button>
+                                                            </div>
+                                                        ) : (
+                                                            <button onClick={() => setShowCheckInConfirm(stage.id)} style={{width:'100%',background:'linear-gradient(to right, #7c3aed, #2563eb)',padding:'0.7rem',borderRadius:'0.5rem',border:'none',color:'white',cursor:'pointer',fontWeight:'600',fontSize:'0.95rem',display:'flex',alignItems:'center',justifyContent:'center',gap:'0.4rem'}}>
+                                                                <MapPin size={18}/> Check In - I'm Ready
                                                             </button>
-                                                            {runners[stage.id]?.name && (
-                                                                <button onClick={() => handleClearRunner(stage.id)} style={{background: '#dc2626', padding: '0.5rem 1rem', borderRadius: '0.25rem', border: 'none', color: 'white', cursor: 'pointer'}}>Clear</button>
-                                                            )}
-                                                        </>
-                                                    ) : (
-                                                        <div style={{flex: 1, textAlign: 'center', color: '#6b7280', fontSize: '0.875rem', padding: '0.5rem'}}>View only</div>
-                                                    )}
-                                                    <a href={`https://www.google.com/maps/search/?api=1&query=${stage.lat},${stage.lng}`} target="_blank" rel="noopener noreferrer" style={{background: '#4b5563', padding: '0.5rem 1rem', borderRadius: '0.25rem', color: 'white', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem'}}>
-                                                        <Navigation size={16} />
-                                                    </a>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                                {isAdmin && editingStage === stage.id ? (
+                                                    <div>
+                                                        <input type="text" placeholder="Runner name" value={editName} onChange={(e) => setEditName(e.target.value)} style={{width:'100%',background:'#374151',borderRadius:'0.25rem',padding:'0.5rem 0.75rem',color:'white',border:'none',marginBottom:'0.5rem',fontSize:'16px'}} autoFocus/>
+                                                        <input type="text" placeholder="Notes (pace, phone)" value={editNotes} onChange={(e) => setEditNotes(e.target.value)} style={{width:'100%',background:'#374151',borderRadius:'0.25rem',padding:'0.5rem 0.75rem',color:'white',border:'none',marginBottom:'0.5rem',fontSize:'16px'}}/>
+                                                        <div style={{display:'flex',gap:'0.5rem'}}>
+                                                            <button onClick={() => handleSaveRunner(stage.id)} style={{flex:1,background:'#16a34a',padding:'0.5rem',borderRadius:'0.25rem',border:'none',color:'white',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'0.3rem'}}><Check size={16}/> Save</button>
+                                                            <button onClick={() => { setEditingStage(null); setEditName(''); setEditNotes(''); }} style={{flex:1,background:'#4b5563',padding:'0.5rem',borderRadius:'0.25rem',border:'none',color:'white',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'0.3rem'}}><X size={16}/> Cancel</button>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div style={{display:'flex',gap:'0.5rem'}}>
+                                                        {isAdmin && (
+                                                            <>
+                                                                <button onClick={() => startEdit(stage)} style={{flex:1,background:'#2563eb',padding:'0.5rem',borderRadius:'0.25rem',border:'none',color:'white',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'0.3rem',fontSize:'0.85rem'}}><Edit2 size={14}/> {hasRunner ? 'Edit' : 'Assign'}</button>
+                                                                {hasRunner && <button onClick={() => handleClearRunner(stage.id)} style={{background:'#dc2626',padding:'0.5rem 0.75rem',borderRadius:'0.25rem',border:'none',color:'white',cursor:'pointer',fontSize:'0.85rem'}}>Clear</button>}
+                                                            </>
+                                                        )}
+                                                        <a href={`https://www.google.com/maps/search/?api=1&query=${stage.lat},${stage.lng}`} target="_blank" rel="noopener noreferrer" style={{background:'#4b5563',padding:'0.5rem 0.75rem',borderRadius:'0.25rem',color:'white',textDecoration:'none',display:'flex',alignItems:'center',gap:'0.25rem',fontSize:'0.85rem'}}><Navigation size={14}/> Map</a>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
                         </div>
                     )}
 
-                    {/* Footer Stats */}
-                    <div style={{position: 'fixed', bottom: 0, left: 0, right: 0, background: '#1f2937', borderTop: '1px solid #374151', padding: '0.75rem'}}>
-                        <div style={{display: 'flex', justifyContent: 'space-around', textAlign: 'center', fontSize: '0.875rem'}}>
-                            <div><div style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#60a5fa'}}>{runningStages}</div><div style={{color: '#9ca3af'}}>Stages</div></div>
-                            <div><div style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#fbbf24'}}>{TOTAL_DISTANCE.toFixed(1)}</div><div style={{color: '#9ca3af'}}>Miles</div></div>
-                            <div><div style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#4ade80'}}>{assignedCount}</div><div style={{color: '#9ca3af'}}>Assigned</div></div>
-                            <div><div style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#f87171'}}>{runningStages - assignedCount}</div><div style={{color: '#9ca3af'}}>Remaining</div></div>
+                    {/* Footer */}
+                    <div style={{position:'fixed',bottom:0,left:0,right:0,background:'#1f2937',borderTop:'1px solid #374151',padding:'0.5rem'}}>
+                        <div style={{display:'flex',justifyContent:'space-around',textAlign:'center',fontSize:'0.7rem'}}>
+                            <div><div style={{fontSize:'1.1rem',fontWeight:'bold',color:'#60a5fa'}}>{runningStages}</div><div style={{color:'#9ca3af'}}>Stages</div></div>
+                            <div><div style={{fontSize:'1.1rem',fontWeight:'bold',color:'#fbbf24'}}>{TOTAL_DISTANCE.toFixed(1)}</div><div style={{color:'#9ca3af'}}>Miles</div></div>
+                            <div><div style={{fontSize:'1.1rem',fontWeight:'bold',color:'#4ade80'}}>{assignedCount}</div><div style={{color:'#9ca3af'}}>Assigned</div></div>
+                            <div><div style={{fontSize:'1.1rem',fontWeight:'bold',color:'#a78bfa'}}>{checkedInCount}</div><div style={{color:'#9ca3af'}}>Ready</div></div>
                         </div>
                     </div>
                 </div>
             );
         }
 
-        ReactDOM.render(<PalmdaleB2VTracker />, document.getElementById('root'));
+        ReactDOM.render(<App/>, document.getElementById('root'));
     </script>
 </body>
 </html>
